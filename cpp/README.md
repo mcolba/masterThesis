@@ -18,7 +18,6 @@ Requires: Visual Studio, CMAKE.
     * configure and generate. 
 * open and build LEVMAR.sln
 * add levmar.lib and levmar.h to the relevant directories
-see https://charmie11.wordpress.com/2012/04/13/using-levmar-2-6-with-visual-studio/
 
 #### 3. Using the c++ code ####
 * Add the directory of the .h files in: Properties > C/C++ > General > Additional Include Directories
