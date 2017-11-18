@@ -6,29 +6,38 @@ dyn.load('D:/Dropbox/Thesis/Code/hestonCalibrator_bis/x64/Release/hestonCalibrat
 
 
 hestonPricer <- function(par, S, K, mat, r, q) {  
+  # 
+  #   The routine call the c++ code by Cui et al. (2017) for compting the price 
+  #   of an European call option under the Heston model.  
   #
-  #   par = [5]-vector of heston parametes 
-  #   spot 
-  #   k = [n]-vector of strikes 
-  #   mat = [n]-vector of maturities 
-  #   r = [n]-vector of continously conpounded rates 
-  #   q = [n]-vector of continously conpounded dividend yields 
+  # ARGUMENTS: 
+  #   * par = [5]-vector of heston parametes in the order: k, v_inf, volofvol
+  #           rho, and v_0.     
+  #   * S = underlying spot price 
+  #   * K = [n]-vector of strikes 
+  #   * mat = [n]-vector of maturities 
+  #   * r = [n]-vector of continously conpounded (spot) rates 
+  #   * q = [n]-vector of continously conpounded (spot) dividend yields 
   #
+  # VALUE: 
+  #   * The function returns a [n]-vector of call option prices. 
+  # 
   
   n <- length(K)
   m <- length(par)
   
-  # if yields is a constant make it a vector  
+  # if the yield is a constant make it a vector  
   if(length(r)==1){r=rep(r,n)}
   if(length(q)==1){r=rep(q,n)}
   
   # check dim 
   if(n!=length(r)|n!=length(q)|n!=length(K)|n!=length(mat)) stop('wrong dim')
-  if(length(par)!=5) warning('wrong parameter dim')
+  if(length(par)!=5) stop('wrong parameter dim')
   
   # compute adjusted spot  
   spot_adj <- S*exp(-q*mat)
   
+  # call c++ routine 
   prices <- .C('hestonPricer',
                S_adj = as.double(spot_adj), 
                r = as.double(r), 
@@ -44,29 +53,37 @@ hestonPricer <- function(par, S, K, mat, r, q) {
 }
 
 hestonDelta <- function(par, S, K, mat, r, q) {  
+  # 
+  #   The routine comptes the delta of an European call option under the Heston model.  
+  # 
+  # ARGUMENTS: 
+  #   * par = [5]-vector of heston parametes in the order: k, v_inf, volofvol
+  #           rho, and v_0.     
+  #   * S = underlying spot price 
+  #   * K = [n]-vector of strikes 
+  #   * mat = [n]-vector of maturities 
+  #   * r = [n]-vector of continously conpounded (spot) rates 
+  #   * q = [n]-vector of continously conpounded (spot) dividend yields 
   #
-  #   par = [5]-vector of heston parametes 
-  #   spot 
-  #   k = [n]-vector of strikes 
-  #   mat = [n]-vector of maturities 
-  #   r = [n]-vector of continously conpounded rates 
-  #   q = [n]-vector of continously conpounded dividend yields 
+  # VALUE: 
+  #   * The function returns a [n]-vector of call option deltas 
   #
   
   n <- length(K)
   m <- length(par)
   
-  # if yields is a constant make it a vector  
+  # if the yield is a constant make it a vector  
   if(length(r)==1){r=rep(r,n)}
   if(length(q)==1){r=rep(q,n)}
   
   # check dim 
   if(n!=length(r)|n!=length(q)|n!=length(K)|n!=length(mat)) stop('wrong dim')
-  if(length(par)!=5) warning('wrong parameter dim')
+  if(length(par)!=5) stop('wrong parameter dim')
   
   # compute adjusted spot  
   spot_adj <- S*exp(-q*mat)
   
+  # call c++ routine 
   delta <- .C('hestonDelta',
               S_adj = as.double(spot_adj), 
               r = as.double(r),
@@ -84,29 +101,38 @@ hestonDelta <- function(par, S, K, mat, r, q) {
 
 
 hestonJacobian <- function(par, S, K, mat, r, q) {  
+  # 
+  #   The routine call the c++ code by Cui et al. (2017) for compting the jacobian 
+  #   of an European call option under the Heston model.  
   #
-  #   par = [5]-vector of heston parametes 
-  #   spot 
-  #   k = [n]-vector of strikes 
-  #   mat = [n]-vector of maturities 
-  #   r = [n]-vector of continously conpounded rates 
-  #   q = [n]-vector of continously conpounded dividend yields 
+  # ARGUMENTS: 
+  #   * par = [5]-vector of heston parametes in the order: k, v_inf, volofvol
+  #           rho, and v_0.     
+  #   * S = underlying spot price 
+  #   * K = [n]-vector of strikes 
+  #   * mat = [n]-vector of maturities 
+  #   * r = [n]-vector of continously conpounded (spot) rates 
+  #   * q = [n]-vector of continously conpounded (spot) dividend yields 
+  #
+  # VALUE: 
+  #   * The function returns a [n x 5]-matrix of first order derivatives  
   #
   
   n <- length(K)
   m <- length(par)
   
-  # if yields is a constant make it a vector  
+  # if the yield is a constant make it a vector  
   if(length(r)==1){r=rep(r,n)}
   if(length(q)==1){r=rep(q,n)}
   
   # check dim 
   if(n!=length(r)|n!=length(q)|n!=length(K)|n!=length(mat)) stop('wrong dim')
-  if(length(par)!=5) warning('wrong parameter dim')
+  if(length(par)!=5) stop('wrong parameter dim')
   
   # compute adjusted spot  
   spot_adj <- S*exp(-q*mat)
   
+  # call c++ routine 
   jac <- .C('hestonJac',
                S_adj = as.double(spot_adj), 
                r = as.double(r), 
@@ -122,17 +148,37 @@ hestonJacobian <- function(par, S, K, mat, r, q) {
 }
 
 hestonCalibrator <- function(price, S, K, mat, r, q, guess, printSummary=TRUE) {  
+  
+  # 
+  #   The routine call the c++ code by Cui et al. (2017) for calibrating the Heston 
+  #   model to a set of option prices. 
   #
-  #
-  #  stopCriteria: 
-  #   6 -> 'Solved: stopped by small ||e||_2'
-  #   1 -> 'Solved: stopped by small gradient t(J)e'
-  #   2 -> 'Solved: stopped by small change Dp'
+  # ARGUMENTS: 
+  #   * price = [n]-vector of European call option prices  
+  #   * S = underlying spot price 
+  #   * K = [n]-vector of strikes 
+  #   * mat = [n]-vector of maturities 
+  #   * r = [n]-vector of continously conpounded (spot) rates 
+  #   * q = [n]-vector of continously conpounded (spot) dividend yields 
+  #   * guess = [5]-vector containing the initial guess for the heston parametes, 
+  #             in the order: k, v_inf, volofvol, rho, and v_0. 
+  #   * printSummary = boolean stating whether to print or not the summary info. 
+  # VALUE: 
+  #   * a list with the following components 
+  #     * $par = [5]-vector of heston parametes in the order: k, v_inf, volofvol
+  #              rho, and v_0. 
+  #     * $residuals.info = [4]-vector containing: ||e0||_2, ||e*||_2, 
+  #                         ||t(J)e||_inf, ||Dp||_2
+  #     * $time.info  = [2]-vector containing the CPU time and the nr. of iterations. 
+  #     * $stopCriteria:  
+  #       if == 6 -> Solved: stopped by small ||e||_2
+  #       if == 1 -> Solved: stopped by small gradient t(J)e
+  #       if == 2 -> Solved: stopped by small change Dp
   
   n <- length(K)
   m <- length(guess)
   
-  # if yields is a constant make it a vector  
+  # if the yield is a constant make it a vector  
   if(length(r)==1){r=rep(r,n)}
   if(length(q)==1){r=rep(q,n)}
   
@@ -145,7 +191,7 @@ hestonCalibrator <- function(price, S, K, mat, r, q, guess, printSummary=TRUE) {
   # create info vec 
   statistics <- rep(0, 7)
   
-  # Call c++ function 
+  # call c++ routine 
   fit <- .C('hestonCalibrator',
             S_adj = as.double(spot_adj), 
             r = as.double(r), 
@@ -158,7 +204,7 @@ hestonCalibrator <- function(price, S, K, mat, r, q, guess, printSummary=TRUE) {
             m = as.integer(m),
             print = as.logical(printSummary))
 
-  # stopping criteria 
+  # unsolve error messages  
   stopCriteria <- fit$statistics[7]   
   if (stopCriteria==3){ 
     stop('Unsolved: stopped by itmax')
@@ -169,13 +215,16 @@ hestonCalibrator <- function(price, S, K, mat, r, q, guess, printSummary=TRUE) {
   } else if(stopCriteria==7) { 
     stop('Unsolved: stopped by invalid values, user error')
   }
-  # parameters vec 
+  
+  # parameters  
   par <- fit$par
   names(par) = c('k', 'v_inf', 'sigma', 'rho', 'v_0')
-  # errors info vec 
+  
+  # errors info  
   residuals.info <- fit$statistics[1:4]
   names(residuals.info) = c('||e0||_2','||e*||_2','||t(J)e||_inf','||Dp||_2')
-  # speed and # loops info vec 
+  
+  # CPU time and nr. of loops info  
   time.info <- fit$statistics[5:6]
   names(time.info) = c('CPU.time','iterations')
   
