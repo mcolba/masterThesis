@@ -4,7 +4,6 @@
 dyn.load('D:/Dropbox/Thesis/Code/hestonCalibrator_bis/x64/Release/hestonCalibrator.dll')
 # dyn.load('D:/Dropbox/Thesis/Code/hestonCalibrator_bis/x64/Debug/hestonCalibrator.dll')
 
-
 hestonPricer <- function(par, S, K, mat, r, q) {  
   # 
   #   The routine call the c++ code by Cui et al. (2017) for compting the price 
