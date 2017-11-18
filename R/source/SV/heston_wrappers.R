@@ -6,7 +6,7 @@ dyn.load('D:/Dropbox/Thesis/Code/hestonCalibrator_bis/x64/Release/hestonCalibrat
 
 hestonPricer <- function(par, S, K, mat, r, q) {  
   # 
-  #   The routine call the c++ code by Cui et al. (2017) for compting the price 
+  #   The routine call the c++ code by Cui et al. (2017) for computing the price 
   #   of an European call option under the Heston model.  
   #
   # ARGUMENTS: 
@@ -53,7 +53,7 @@ hestonPricer <- function(par, S, K, mat, r, q) {
 
 hestonDelta <- function(par, S, K, mat, r, q) {  
   # 
-  #   The routine comptes the delta of an European call option under the Heston model.  
+  #   The routine computes the delta of an European call option under the Heston model.  
   # 
   # ARGUMENTS: 
   #   * par = [5]-vector of heston parametes in the order: k, v_inf, volofvol
@@ -98,10 +98,9 @@ hestonDelta <- function(par, S, K, mat, r, q) {
   
 }
 
-
 hestonJacobian <- function(par, S, K, mat, r, q) {  
   # 
-  #   The routine call the c++ code by Cui et al. (2017) for compting the jacobian 
+  #   The routine call the c++ code by Cui et al. (2017) for computing the jacobian 
   #   of an European call option under the Heston model.  
   #
   # ARGUMENTS: 
@@ -238,23 +237,16 @@ hestonCalibrator <- function(price, S, K, mat, r, q, guess, printSummary=TRUE) {
 
 test_heston <- function(){
   
-  S = 100
-  K = 130 
-  mat = 3
-  r = 0.5
-  q = 0.2
+  # mkt parameters 
+  S = 100; K = 130; mat = 3; r = 0.5; q = 0.2
   # Heston parameters 
-  k = 0.2
-  v_inf = 0.5
-  sigma = 0.25
-  rho = -0.75 
-  v0 = 0.2
+  k = 0.2; v_inf = 0.5; sigma = 0.25; rho = -0.75; v0 = 0.2
   par <- c(k,v_inf,sigma,rho,v0)
-  # price 
+  # compute price 
   c <- hestonPricer(par, S, K, mat, r, q)
-  # closed form delta 
+  # compute closed form delta 
   delta.an <- hestonDelta(par, S, K, mat, r, q)
-  # numerical delta 
+  # compute numerical delta 
   eps <- 1e-6
   diff <- hestonPricer(par, S+eps, K, mat, r, q)-hestonPricer(par, S-eps, K, mat, r, q)
   delta.num <- diff/(2*eps)
