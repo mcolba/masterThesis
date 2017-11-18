@@ -5,9 +5,23 @@ source("./source/BSformulas.R")
 source("./source/SV/heston_wrappers.R")
 
 bisection <- function(target, FUN, ...){
+  #
+  #   The routine implement the bisection root-finding algorithm to find 
+  #   the value x such that FUN(x) = target.  
+  #   
+  # ARGUMENTS: 
+  #   * target = the target value 
+  #   * FUN = a function of the form FUN(x) returning a signle value 
+  # additional arguments:
+  #   * low = lower bound. Default is 0 
+  #   * high = upper bound. defaulst is 1.5  
+  #   * tollerance = required tollerance. Default is 1.5e-15  
+  # VALUE: 
+  #   * x 
   
   if(is.na(target)) return(NA)
   
+  # additional arguments
   arg <- list(...)
   
   if(is.null(arg$low)) {low=0} else {low=arg$low} 
@@ -21,10 +35,13 @@ bisection <- function(target, FUN, ...){
   
   for(i in 1:max_loops){ 
   
-    if(y<target) low = x;
-    if (y>target) high = x;
-    x = 0.5*(low + high);
-    y = FUN(x);
+    if(y<target) 
+      low = x
+    if (y>target) 
+      high = x
+    
+    x = 0.5*(low + high)
+    y = FUN(x)
     
     if(!(abs(y-target)>tolerance)) {break}
   } 
