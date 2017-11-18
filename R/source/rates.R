@@ -2,6 +2,10 @@
 ###  rates.R  ###
 
 spotTOforward <- function(rates, t_grid, type = c('contTOcont','contTOsimp')){
+  #
+  #   The function convert spot rates to forward rates using the flat forward 
+  #   convention, i.e. linear on the log of discount factors
+  #
   
   # check dimension 
   if(t_grid[1]==0) {stop("t_grid[1]=0")}
@@ -23,7 +27,30 @@ spotTOforward <- function(rates, t_grid, type = c('contTOcont','contTOsimp')){
   return(list(f = f, dt = dt))
 }
 
-
+forwardTOspot <- function(rates, t_grid, type = c('simpTOcont','contTOcont')){
+  #
+  #   The function convert forward rates to spot rates 
+  #
+  
+  # check dimension 
+  if(t_grid[1]==0) {stop("t_grid[1]=0")}
+  if(length(rates)!=length(t_grid)) {stop("wrong dimension")}
+  
+  n <- length(t_grid)
+  dt <- c(t_grid[1], t_grid[2:n]-t_grid[1:(n-1)])
+  
+  if(type=='simpTOcont'){
+    
+    r.simp <- (cumprod(1+rates*dt)-1)/t_grid
+    s <- log(r.simp*t_grid+1)/t_grid
+    
+  } else if(type=='contTOcont'){
+    
+    s <- cumsum(rates*dt)/t_grid
+    
+  }
+  return(list(s = s, dt = dt))
+}
 
 # Unit testing 
 spotTOforward_test <- function(){
@@ -45,26 +72,4 @@ spotTOforward_test <- function(){
   
   stopifnot(all.equal(rates,spot.cont) && all.equal(spot.cont,spot.cont2))
   
-}
-
-forwardTOspot <- function(rates, t_grid, type = c('simpTOcont','contTOcont')){
-  
-  # check dimension 
-  if(t_grid[1]==0) {stop("t_grid[1]=0")}
-  if(length(rates)!=length(t_grid)) {stop("wrong dimension")}
-  
-  n <- length(t_grid)
-  dt <- c(t_grid[1], t_grid[2:n]-t_grid[1:(n-1)])
-  
-  if(type=='simpTOcont'){
-    
-    r.simp <- (cumprod(1+rates*dt)-1)/t_grid
-    s <- log(r.simp*t_grid+1)/t_grid
-    
-  } else if(type=='contTOcont'){
-    
-    s <- cumsum(rates*dt)/t_grid
-    
-  }
-  return(list(s = s, dt = dt))
 }
