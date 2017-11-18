@@ -1,8 +1,12 @@
 
 ###  mesh.R  ###
 
+
+# load/install packages 
 if(!require("fields")) install.packages("fields") # for Tps 
+# include R files 
 source("./source/numericalMethods/fdm.R") # for diffMat 
+
 
 hyperbolicMesh <- function(min, max, c, n, alpha=0.1, x_star=NULL){
   #

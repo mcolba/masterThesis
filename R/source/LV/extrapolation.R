@@ -1,10 +1,12 @@
 
 ###  extrapolation.R  ###
 
+
+# include R files 
 source("./source/numericalMethods/fdm.R") # for diffMat 
 
+
 flateningEtrapol <- function(x, grid, internal, method='exponential', lambda=NULL){
-  
   #
   #
   # DETAILS: 

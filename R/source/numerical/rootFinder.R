@@ -73,17 +73,13 @@ hBScall_iv <- function(par, S, K, mat, r, q){
 
 test_BS_iv <- function(){
   
-  S=100
-  K=110
-  r=0.05
-  q=0.02
-  exp=2
+  S=100; K=110; r=0.05; q=0.02; exp=2
   
-  IV=0.01
+  IV = 0.01
   p_theoretical <- BScall_price(S,K,r,q,IV,exp)
   all.equal(IV, BScall_iv(p_theoretical,S,K,r,q,exp))
   
-  IV=4  
+  IV = 4  
   p_theoretical <- BScall_price(S,K,r,q,IV,exp)
   all.equal(IV, BScall_iv(p_theoretical,S,K,r,q,exp, higher=5)) 
   

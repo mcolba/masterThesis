@@ -1,11 +1,13 @@
 
 ###  pre_smoother.R  ###
 
-source("./source/BSformulas.R")
-source("./source/LV/mesh.R")
 
 # load/install packages 
 if (!require("fields")) install.packages("fields") # for Thin Plate Spline
+# include R files 
+source("./source/BSformulas.R")
+source("./source/LV/mesh.R")
+
 
 TPSpreSmoother <- function(iv, expiries, strikes, spot, rates, dividends, t_grid.new = NULL, 
                            k_grid=NULL, forward=NULL,  add_t = NULL, alpha=NULL, 

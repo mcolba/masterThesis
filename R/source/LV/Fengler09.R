@@ -1,11 +1,13 @@
 
 ###  Fengler09.R  ### 
 
-source("./source/LV/mesh.R")
-source("./source/BSformulas.R")
 
 # load/install packages 
 if (!require("quadprog")) install.packages("quadprog") # for solve.QP 
+# include R files 
+source("./source/LV/mesh.R")
+source("./source/BSformulas.R")
+
 
 solveQuadprog <- function(p, k_grid, t_grid, rates, dividends, spot, 
                           forward, smooth = 1e-2, sig.space=NULL, ...){

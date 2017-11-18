@@ -1,10 +1,13 @@
 
 ###  Andersen97.R  ### 
 
+
+# load/install packages 
 if(!require("limSolve")) install.packages("limSolve") # for Solve.tridiag 
 if(!require("quadprog")) install.packages("quadprog") # for quadratic program. 
+# include R files 
+source("./source/numerica/fdm.R") # for diffMat
 
-source("./source/numericalMethods/fdm.R") # for diffMat
 
 AndersenBrothertonR <- function(p, s_grid, t_grid, s.idx, r, q, theta, constrain=NULL, sig.idx=NULL, 
                                 imposeBoundryValues='greed_boundry', spotRates=T, ns.iv=NULL, max.iv=NULL){ 
