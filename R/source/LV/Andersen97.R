@@ -1,5 +1,5 @@
 
-###  Andersen_BrothertonRatcliffe.R  ### 
+###  Andersen97.R  ### 
 
 if(!require("limSolve")) install.packages("limSolve") # for Solve.tridiag 
 if(!require("quadprog")) install.packages("quadprog") # for quadratic program. 

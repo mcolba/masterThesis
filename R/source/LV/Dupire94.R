@@ -1,5 +1,5 @@
 
-###  Dupire.R  ### 
+###  Dupire94.R  ### 
 
 source("./source/numericalMethods/fdm.R") 
 
