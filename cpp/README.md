@@ -27,7 +27,7 @@ Requires: Visual Studio, CMAKE.
 
 NB: Be consistent with 32bit vs 64bit, and Debug vs Release versions!
 
-Using rhe dll in R 
+Using the dll in R 
 --- 
 #### Debugging #### 
 * Build a Debug dll. Make sure it has debug info: General > C/C++ > Debug Information format
