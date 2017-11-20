@@ -1,5 +1,5 @@
 
-### example_fdm.R ### 
+### fdm_example.R ### 
 
 rm(list = ls())
 
