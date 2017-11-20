@@ -6,7 +6,7 @@
 if(!require("limSolve")) install.packages("limSolve") # for Solve.tridiag 
 if(!require("quadprog")) install.packages("quadprog") # for quadratic program. 
 # include R files 
-source("./source/numerica/fdm.R") # for diffMat
+source("./source/numerical/fdm.R") # for diffMat
 
 
 AndersenBrothertonR <- function(p, s_grid, t_grid, s.idx, r, q, theta, constrain=NULL, sig.idx=NULL, 

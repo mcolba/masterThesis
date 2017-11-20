@@ -3,7 +3,7 @@
 
 
 # include R files 
-source("./source/numericalMethods/fdm.R") 
+source("./source/numerical/fdm.R") 
 
 
 dupireLV_p <- function(c, k, r, q, c_t, c_k, c_kk, t=NULL){

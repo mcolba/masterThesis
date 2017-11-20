@@ -7,9 +7,9 @@
 rm(list = ls())
 
 source("./source/plotter.R") 
-source("./source/numericalMethods/fdm.R")
+source("./source/numerical/fdm.R")
 source("./source/BSformulas.R")
-source("./source/LV/Andersen_BrothertonRatcliffe.R")
+source("./source/LV/Andersen97.R")
 source("./source/LV/mesh.R")
 source("./source/LV/extrapolation.R")
 
@@ -39,14 +39,9 @@ p_initial <- BScall_price2D(S0, K, r, q, IV, mat) # rows are maturities
 exp <- 2 
 
 # construct grid
-
 t_grid <- seq(mat[1], exp, length.out = 25) 
 k_grid <- exp(seq(5.276, 7.553, length.out = 65))
 s.idx <- 32
-
-#t_grid <- seq(mat[1], exp, length.out = 100) 
-#k_grid <- exp(seq(5.276, 7.553, length.out = 260))
-#s.idx <- 127 
 
 k_grid[s.idx] <- S0 # make S0 a point of the grid, beta = 32 
 # IVS matrix 
@@ -63,20 +58,7 @@ significant[c(1:2,(nrow(significant)-1):nrow(significant)),] <- FALSE
 internal2D <- sapply(1:length(t_grid),FUN=function(j){K[1]<=k_grid&k_grid<=K[length(K)]})
 internal1D <-K[1]<=k_grid&k_grid<=K[length(K)]
 
-# EXTRAP -> INTRAP 
-#grid <- c(k_grid[k_grid<K[1]],K,k_grid[k_grid>K[length(K)]]) 
-#int <-  grid>=K[1] & grid<=K[length(K)]
-#tmp <- (flateningEtrapol(x=IV, grid=grid, internal=int, 
-#                               method='exponential', lambda=2))
-#xy <- expand.grid(mat, grid)
-#tpsFit <- Tps(xy, as.vector(mat*(tmp^2)), lambda=1e-13)
-#new.xy <- expand.grid(t_grid, k_grid)
-#l <- lapply(1:length(t_grid), FUN=function(j){cbind(t_grid[j],k_grid)})
-#new.xy <- do.call(rbind, l)
-#IVbig[] <- sqrt(predict(tpsFit,x=new.xy)/new.xy[,1])
-
-# INTRAP -> EXTRAPp_initial[7,]
-# INTRAPOLATION (TPS) - Total variance?? 
+# INTRAPOLATION (TPS) - Total variance 
 xy <- expand.grid(mat, K)
 tpsFit <- Tps(xy, as.vector(mat*(IV^2)), lambda=1e-14, m=3) 
 new.xy <- expand.grid(t_grid, k_grid[internal1D])
@@ -85,20 +67,20 @@ new.xy <- do.call(rbind, l)
 IVbig[internal2D] <- sqrt(predict(tpsFit,x=new.xy)/new.xy[,1])
 
 ### bicubic -> similar results!!!
-#tmpIV <- matrix(NA,length(t_grid),length(K))
-#for(i in 1:length(K)){
-#  tmpIV[,i] <- spline(mat, IV[,i], method = "natural", xout=t_grid)$y
-#}
-#IVbig[internal1D,] <- NA 
-#for(i in 1:length(t_grid)){
-#  IVbig[internal1D,i] <- spline(K, tmpIV[i,], method = "natural", 
-#                                xout=k_grid[internal1D])$y
-#}
+# tmpIV <- matrix(NA,length(t_grid),length(K))
+# for(i in 1:length(K)){
+#   tmpIV[,i] <- spline(mat, IV[,i], method = "natural", xout=t_grid)$y
+# }
+# IVbig[internal1D,] <- NA 
+# for(i in 1:length(t_grid)){
+#   IVbig[internal1D,i] <- spline(K, tmpIV[i,], method = "natural", 
+#                                 xout=k_grid[internal1D])$y
+# }
 
 # EXTRAPOLATION 
 # smooth, gradual flattening of the volatility curve
 IVbig[,] <- t(flateningEtrapol(x=t(IVbig[internal1D,]), grid=log(k_grid), internal=internal1D, 
-                               method='exponential', lambda=6))
+                               method='exponential', lambda=5))
 # Figure 2 p. 25
 open3d()
 visualizeSurface(log(k_grid),t_grid,IVbig, title='Figure 2') 
@@ -114,7 +96,7 @@ visualizeSurface(t_grid, log(k_grid), t_grid*t(IVbig^2))
 # compute call prices 
 p <- t(BScall_price2D(S0, k_grid, r, q, t(IVbig), t_grid)) 
 
-# finf a, b, and c. Andersen 98 
+# find a, b, and c. Andersen 98 
 r=rep(r,length(t_grid))
 q=rep(q,length(t_grid))
 constrain = NULL
@@ -136,7 +118,8 @@ aspect3d(2,1,1)
 # FDM pricer 
 fdmp <- rep(NA,10)
 for(i in 1:10){
-  fdmp[i] <- fdmABR(K[i], s_grid=k_grid, s.idx, t_grid, abc=abr, r, q, theta = 0.5, n.imp = 0, spotRates = TRUE)$p
+  fdmp[i] <- fdmABR(K[i], s_grid=k_grid, s.idx, t_grid, abc=abr, r, q, theta = 0.5, 
+                    n.imp = 0, spotRates = TRUE)$p
 }
 
 # TABLE 1 
@@ -150,33 +133,38 @@ cbind(
 )
 
 # camparison with Dupire 
-source("./source/LV/Dupire.R")
+source("./source/LV/Dupire94.R")
+
+# partial derivatives 
 p_k <- t(diffMat(k_grid,1)$mat%*%(p))
 p_kk <- t(diffMat(k_grid,2)$mat%*%(p))
 p_t <- (diffMat(t_grid,1)$mat%*%t(p))
+
 r_f <- spotTOforward(r, t_grid, 'contTOcont')$f
 q_f <- spotTOforward(q, t_grid, 'contTOcont')$f
 nom <- t(p_t + q_f*t(p) + (r_f-q_f)*p_k%*%diag(k_grid))
 v.dup <- t(dupireLV_p(t(p), k_grid, r_f, q_f, p_t, p_k, p_kk))
+
 sigma.dup <- sqrt(v.dup)
 sigma.dup[sigma.dup>0.5] <- 0.5
 sigma.unc <- sqrt(abr$v.unconstrained*2)
 sigma.unc[sigma.unc>0.5] <- 0.5
+
 # plot dupire local vol
 open3d()
 layout3d(matrix(1:2,1,2) , sharedMouse = TRUE)
 visualizeSurface(log(k_grid), t_grid, sigma.dup, title='dupire')
 aspect3d(2,1,1)
 next3d()
-visualizeSurface(log(k_grid), t_grid, sigma.unc, title='fd')
+visualizeSurface(log(k_grid), t_grid, sigma.unc, title='Andersen')
 aspect3d(2,1,1)
 
-# v, Dupire vs Andersen
-cbind(abr$v.unconstrained[,21:23], v.dup[,21:23])
 
 # CONSTRAINED vs unconstrained 
-#abr.cs <- AndersenBrothertonR(t(p), s_grid=k_grid, t_grid, s.idx, r, q, theta=0.5, constrain=c(0.04, 0.4), sig.idx=significant, 
-#                           keepBoundaryC=F, spotRates=T, ns.iv=0.2, max.iv=0.4)
+abr.cs <- AndersenBrothertonR(p, s_grid=k_grid, t_grid, s.idx, r, q, theta=0.5, 
+                              constrain=c(0.04, 0.4), sig.idx=significant, 
+                              imposeBoundryValues='greed_boundry', spotRates=T, 
+                              ns.iv=0.2, max.iv=0.4)
 sigma.cs <- sqrt(2*abr.cs$a)
 # plot 
 open3d()
