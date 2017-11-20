@@ -1,8 +1,8 @@
 
 ###  heston_wrappers.R  ###
 
-dyn.load('D:/Dropbox/Thesis/Code/hestonCalibrator_bis/x64/Release/hestonCalibrator.dll')
-# dyn.load('D:/Dropbox/Thesis/Code/hestonCalibrator_bis/x64/Debug/hestonCalibrator.dll')
+dyn.load('D:/Dropbox/Thesis/Code/hestonCalibrator/x64/Release/hestonCalibrator.dll')
+# dyn.load('D:/Dropbox/Thesis/Code/hestonCalibrator/x64/Debug/hestonCalibrator.dll')
 
 hestonPricer <- function(par, S, K, mat, r, q) {  
   # 
@@ -232,8 +232,8 @@ hestonCalibrator <- function(price, S, K, mat, r, q, guess, printSummary=TRUE) {
               stopCriteria=stopCriteria))
 }
 
-# dyn.unload('D:/Dropbox/Thesis/Code/hestonCalibrator_bis/x64/Release/hestonCalibrator.dll')
-# dyn.unload('D:/Dropbox/Thesis/Code/hestonCalibrator_bis/x64/Debug/hestonCalibrator.dll')
+# dyn.unload('D:/Dropbox/Thesis/Code/hestonCalibrator/x64/Release/hestonCalibrator.dll')
+# dyn.unload('D:/Dropbox/Thesis/Code/hestonCalibrator/x64/Debug/hestonCalibrator.dll')
 
 test_heston <- function(){
   

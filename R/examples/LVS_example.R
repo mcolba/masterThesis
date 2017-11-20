@@ -272,7 +272,6 @@ lv.dup2[lv.dup2>max.lv] <- max.lv
 lv.dup2[lv.dup2<min.lv | is.na(lv.dup2)] <- min.lv
 
 # PLOTS:
-
 # compare Dupire LVS compute with the two formulas 
 open3d()  
 layout3d(matrix(1:2,1,2) , sharedMouse = TRUE)
@@ -295,25 +294,37 @@ for(i in 1:length(K)){
   andersen.fdm.p[i] <- fdmABR(K[i], s_grid=k_grid, s.idx=s.idx, t_grid, abc=abr, r, q, 
                               theta = 0.5, n.imp = 0, spotRates = TRUE)$p
 }
-p_mkt[mat.idx,] - andersen.fdm.p
-
 dupire.fdm.p <- rep(NA,length(K))
 for(i in 1:length(K)){
   dupire.fdm.p[i] <- fdmBack(K[i], k_grid, s.idx, t_grid, lv.dup, r, q, theta = 0.5, 
-                             n.imp = 0, ab.adjust = TRUE, spotRates = TRUE)$p
+                             n.imp = 1, ab.adjust = TRUE, spotRates = TRUE)$p
 }
-
 dupire2.fdm.p <- rep(NA,length(K))
 for(i in 1:length(K)){
   dupire2.fdm.p[i] <- fdmBack(K[i], k_grid, s.idx, t_grid, lv.dup2, r, q, theta = 0.5, 
-                             n.imp = 0, ab.adjust = TRUE, spotRates = TRUE)$p
+                             n.imp = 1, ab.adjust = TRUE, spotRates = TRUE)$p
 }
-p_mkt[mat.idx,] - dupire.fdm.p
-(p_mkt[mat.idx,] / dupire.fdm.p -1)*100
 
-# RMSE 
-sqrt(mean((p_mkt[mat.idx,] - andersen.fdm.p)^2))
-sqrt(mean((p_mkt[mat.idx,] - dupire.fdm.p)^2))
-sqrt(mean((p_mkt[mat.idx,] - dupire2.fdm.p)^2))
-
+cbind(
+  K = K/S0,
+  mkt_p = p_mkt[mat.idx,],
+  # Andersen 
+  And_p = andersen.fdm.p,
+  diff = round((andersen.fdm.p - p_mkt[mat.idx,]),2),
+  relDiff = round((andersen.fdm.p/p_mkt[mat.idx,]-1)*100,2),
+  # Dupire Price Formula 
+  dup.p_p = dupire.fdm.p,
+  diff = round((dupire.fdm.p - p_mkt[mat.idx,]),2),
+  relDiff = round((dupire.fdm.p/p_mkt[mat.idx,]-1)*100,2),
+  # Dupire IV Formula
+  Dup.iv_p = dupire2.fdm.p,
+  diff = round((dupire2.fdm.p - p_mkt[mat.idx,]),2),
+  relDiff = round((dupire2.fdm.p/p_mkt[mat.idx,]-1)*100,2)
+)
+print('RMSE:')
+cbind(
+  sqrt(mean((p_mkt[mat.idx,] - andersen.fdm.p)^2)),
+  sqrt(mean((p_mkt[mat.idx,] - dupire.fdm.p)^2)),
+  sqrt(mean((p_mkt[mat.idx,] - dupire2.fdm.p)^2))  
+)
 
