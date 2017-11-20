@@ -1,9 +1,10 @@
-The dynamic-link library 'hestonCalibrator.dll' contains functions for pricing and calibration. 
+The cpp file contains the routines for pricing and calibration by Yiran Cui (Cui et al., 2017). Only minors adjustments were made to cope with the interest rate and dividend yield term structures, and a method for cumputing delta was added. 
 
+'heston.cpp' requires the LAPACK and LAVMAR libraries to work. Below we provide a short step-by-step tutorial for using these libraries in Visual Studio. Alternativelly, we provide a pre-built dynamic-link library (/MD) 'hestonCalibrator.dll' so the C++ code can easily be called from R. See 'masterThesis/R/source/SV/heston_wrappers.R' for the respective R wrapping functions. 
 
-Build Instructions for Visual Studio 
+Using the C++ code in MS Visual Studio 
 ---
-#### 1. LAPACK in Windows w/o Fortana compiler ####
+#### 1. LAPACK Library (w/o Fortana compiler) ####
 Requires: Visual Studio, CMAKE. 
 * Download CLAPAK from: http://icl.cs.utk.edu/lapack-for-windows/clapack/index.html and follow the instructions under 'Easy Windows Build'
 * Add the libraries libf2c.lib, lapack.lib, and blas.lib to your 'external libraries directory' 
@@ -26,7 +27,7 @@ Requires: Visual Studio, CMAKE.
 
 NB: Be consistent with 32bit vs 64bit, and Debug vs Release versions!
 
-Using rhe dll in R 
+Using the dll in R 
 --- 
 #### Debugging #### 
 * Build a Debug dll. Make sure it has debug info: General > C/C++ > Debug Information format
