@@ -1,17 +1,41 @@
 
-###  Andersen97.R  ### 
+#  Andersen97.R 
 
 
 # load/install packages 
 if(!require("limSolve")) install.packages("limSolve") # for Solve.tridiag 
 if(!require("quadprog")) install.packages("quadprog") # for quadratic program. 
 # include R files 
-source("./source/numerical/fdm.R") # for diffMat
+source("./source/numerical/fdm.R") 
 
 
-AndersenBrothertonR <- function(p, s_grid, t_grid, s.idx, r, q, theta, constrain=NULL, sig.idx=NULL, 
-                                imposeBoundryValues='greed_boundry', spotRates=T, ns.iv=NULL, max.iv=NULL){ 
-  
+AndersenBrothertonR <- function(p, s_grid, t_grid, s.idx, r, q, theta, constrain=NULL, 
+                                sig.idx=NULL, imposeBoundryValues='greed_boundry', 
+                                spotRates=T, ns.iv=NULL, max.iv=NULL){
+  # 
+  # The function produces the local volatility surface via the implicit finite 
+  # difference approach proposed by Andersen et al. (1997). The grid not need 
+  # to be equally-spaced. 
+  #
+  # ARGUMENTS: 
+  # * p = [NxM]-matrix of cal option prices 
+  # * s_grid = [N]-vector of grid points in the strike-direction. The initial 
+  #            price (S0) must be a point of the grid.  
+  # * t_grid = [M]-vector of grid points in the time-direction 
+  # * s.idx = indexing of the initial price, such that s_grid[s.idx]=S0.  
+  # * r = [M]-vector of interest rates  
+  # * q = [M]-vector of dividend yields
+  # * theta = parameter controlling the finite difference scheme. if 0  -> fully implicit,
+  #           if 1 -> fully explicit, if 0.5 Crank-Nicolson. 
+  # * constrain = [2]-vector containing min e max IV values to impose in the cinstrained 
+  #               method. Default is NULL, which performs the unconstrained method. 
+  # * sig.idx = [NxM]-matrix of boolean values indicating the significant grid space.  
+  # * imposeBoundryValues = see Andersen et al. (1997)
+  # * spotRates = boolean indicating weather r and q are spot or forward rates. 
+  # * ns.iv = fixed IV value for the non-significant space.  
+  # * max.iv = cap value for the IV.  
+  # 
+   
   # dim
   N <- length(s_grid)
   M <- length(t_grid)
