@@ -1,6 +1,6 @@
 The cpp file contains the routines for pricing and calibration by Yiran Cui (Cui et al., 2017). Only minors adjustments were made to cope with the interest rate and dividend yield term structures, and a method for cumputing delta was added. 
 
-'heston.cpp' requires the LAPACK and LAVMAR libraries to work. Below we provide a short step-by-step tutorial for using these libraries in Visual Studio. Alternativelly, we provide a pre-built dynamic-link library (/MD) 'hestonCalibrator.dll' so the C++ code can easily be called from R. See 'masterThesis/R/source/SV/heston_wrappers.R' for the respective R wrapping functions. 
+'heston.cpp' requires the LAPACK and LEVMAR libraries to work. Below we provide a short step-by-step tutorial for using these libraries in Visual Studio. Alternativelly, we provide a pre-built dynamic-link library (/MD) 'hestonCalibrator.dll' so the C++ code can easily be called from R. See 'masterThesis/R/source/SV/heston_wrappers.R' for the respective R wrapping functions. 
 
 Using the C++ code in MS Visual Studio 
 ---
