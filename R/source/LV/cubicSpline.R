@@ -1,25 +1,27 @@
 
-###  cubicSpline.R ###
+#  cubicSpline.R 
 
 # 
 #  c.spline_predict  
 # 
 c.spline_predict <- function(newK, u, g, gamma){
   #
-  # Given a set of natural cubic spline, the function predict price delta and gamma. 
+  # Given a set of natural cubic splines, the function predict values, first order derivatives, 
+  # and second order derivatives.  
   #
   # ARGUMENTS:
   # * newK = points where to evaluate the spline. Can be either a singol value or a matrix. 
-  # * u = [N x M] matrix of knots. N is the t-dimension and M the K-dimension. i.e. each row 
-  #   correspond to a single cubic spline. 
-  # * g = [M x M] matrix of values. N is the t-dimension and M the K-dimension. 
-  # * gamma = [N x M] matrix of second derivatives. N is the t-dimension and M the K-dimension.
+  # * u = [NxM]-matrix of knots. N is the time-dimension and M the K-dimension. i.e. each row 
+  #       correspond to a natural cubic spline. 
+  # * g = [MxM]-matrix of values, where N is the time-dimension and M the K-dimension. 
+  # * gamma = [NxM]-matrix of second order derivatives, where N is the time-dimension 
+  #           and M the K-dimension.
   # 
   # VALUE: 
   # * the function returns a list containing the following objects: 
-  #   * $g 
-  #   * $delta
-  #   * $gamma 
+  #   * $g = values  
+  #   * $delta = first order derivatives 
+  #   * $gamma = second order derivatives 
   # 
   
   # check arguments dim. 

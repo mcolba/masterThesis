@@ -1,6 +1,5 @@
 
-###  mesh.R  ###
-
+# mesh.R  
 
 # load/install packages 
 if(!require("fields")) install.packages("fields") # for Tps 
@@ -17,7 +16,7 @@ hyperbolicMesh <- function(min, max, c, n, alpha=0.1, x_star=NULL){
   # * min = value of the first grid point.                   
   # * max = value of the last grid point.
   # * c = center.  
-  # * n = length of the grid. 
+  # * n = number of grid points.
   # * alpha = parameter to control the density of points around c. A smaller alpha
   #   will cause the points to be more centered around c. Default is 0.1. 
   # * x_star = point to include in the grid (optional). 

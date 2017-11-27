@@ -1,9 +1,9 @@
 
-###  Fengler09.R  ### 
-
+#  Fengler09.R
 
 # load/install packages 
 if (!require("quadprog")) install.packages("quadprog") # for solve.QP 
+
 # include R files 
 source("./source/LV/mesh.R")
 source("./source/BSformulas.R")
@@ -12,20 +12,30 @@ source("./source/BSformulas.R")
 solveQuadprog <- function(p, k_grid, t_grid, rates, dividends, spot, 
                           forward, smooth = 1e-2, sig.space=NULL, ...){
   # 
-  # The function solve the quadratic problem defined in Fengles (2009), p. 422 algo (ii):
+  # The function solve the quadratic problem defined in Fengler (2009, p. 422 algo (ii)):
   #   min_x   -y'x+0.5x'Bx
   #   s.t.    A'x = 0 
   #           + inequality constraints 
   #
   # ARGUMENTS:
-  # * p = [N x M] matrix of call prices 
-  # * 
+  # * p = [NxM]-matrix of call prices 
+  # * k_grid = [M]-vector of forward-mneyness grid points.  
+  # * t_grid = [N]-vector of expiry grid points. 
+  # * rates = [N]-vector of interest rates 
+  # * dividends = [N]-vector of dividend yields 
+  # * spot = underlying asset spot price 
+  # * forward = [N]-vector of forward prices 
+  # * smooth = smoothing parameter. 
+  # * sig.space = [NxM]-matrix of boolean values defining the significant space. 
+  #               The quadratic program is then solved only for the sighificant 
+  #               part of the grid. By default the whole grid is significant.  
   # 
   # VALUE: 
   # * the function returns a list containing the following objects: 
-  #   * $g 
-  #   * $gamma 
-  # 
+  #   * $p = arbitrage free prices
+  #   * $gamma = second order derivatives 
+  #   * $K = knots 
+  #
   
   if(is.null(sig.space)){
     sig.space <- matrix(TRUE,length(t_grid),length(k_grid))

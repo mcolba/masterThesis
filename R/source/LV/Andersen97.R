@@ -23,7 +23,7 @@ AndersenBrothertonR <- function(p, s_grid, t_grid, s.idx, r, q, theta, constrain
   #            price (S0) must be a point of the grid.  
   # * t_grid = [M]-vector of grid points in the time-direction 
   # * s.idx = indexing of the initial price, such that s_grid[s.idx]=S0.  
-  # * r = [M]-vector of interest rates  
+  # * r = [M]-vector of risk free rates  
   # * q = [M]-vector of dividend yields
   # * theta = parameter controlling the finite difference scheme. if 0  -> fully implicit,
   #           if 1 -> fully explicit, if 0.5 Crank-Nicolson. 

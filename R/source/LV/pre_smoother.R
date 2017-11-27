@@ -13,8 +13,8 @@ TPSpreSmoother <- function(iv, expiries, strikes, spot, rates, dividends, t_grid
                            k_grid=NULL, forward=NULL,  add_t = NULL, alpha=NULL, 
                            n.points = 35, ...){
   # 
-  # The function creates a (regular) forward-moneyness grid using a thin plate spline 
-  # smoother as sudgested in Fengles (2009, p. 422 algo (i)). 
+  # The function creates a (regular) forward-moneyness (K/F) grid using a thin plate 
+  # spline smoother as sudgested in Fengles (2009, p. 422 algo (i)). 
   #
   # ARGUMENTS: 
   # * iv = [NxM]-matrix of implied volatilities  
@@ -37,14 +37,14 @@ TPSpreSmoother <- function(iv, expiries, strikes, spot, rates, dividends, t_grid
   # 
   # VALUE: 
   # * the function returns a list containing the following objects: 
-  #   * p = smoothed prices 
-  #   * iv = smoothed BS implied volatilities  
-  #   * xy = new grid points as xy coordinates 
-  #   * k_grid = moneyness-direction grid points 
-  #   * t_grid = time-direction grid points
-  #   * rates = interest rates 
-  #   * dividends = dividend yields 
-  #   * forward = forward price 
+  #   * $p = smoothed prices 
+  #   * $iv = smoothed BS implied volatilities  
+  #   * $xy = new grid points as xy coordinates 
+  #   * $k_grid = moneyness-direction grid points 
+  #   * $t_grid = time-direction grid points
+  #   * $rates = interest rates 
+  #   * $dividends = dividend yields 
+  #   * $forward = forward price 
   #
   
   # compute forward prices if missing 
