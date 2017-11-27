@@ -1,9 +1,9 @@
 
-###  pre_smoother.R  ###
-
+#  pre_smoother.R
 
 # load/install packages 
 if (!require("fields")) install.packages("fields") # for Thin Plate Spline
+
 # include R files 
 source("./source/BSformulas.R")
 source("./source/LV/mesh.R")
@@ -13,22 +13,38 @@ TPSpreSmoother <- function(iv, expiries, strikes, spot, rates, dividends, t_grid
                            k_grid=NULL, forward=NULL,  add_t = NULL, alpha=NULL, 
                            n.points = 35, ...){
   # 
-  # The function perform thin plate smoothing as sudgested in Fengles (2009), 
-  # p. 422 algo (i). Convert from strike grid to forward moneyness grid. 
+  # The function creates a (regular) forward-moneyness grid using a thin plate spline 
+  # smoother as sudgested in Fengles (2009, p. 422 algo (i)). 
   #
   # ARGUMENTS: 
-  # * iv = [NxM] matrix of implied volatilities  
-  # * expiries = [1xN] vector of time to matutities in yeears 
-  # * strkes = [1xM] vector of strikes or moneyness values 
-  # * rates = [1xN] vector of contnously conpounded zero rates 
-  # * dividends = [1xN] vector of contnously conpounded dividend yields 
-  # * spot = index spot value 
-  # * k_grid = vector containing the point in time where the greed will be evaluated,
-  #            default is k_grid = strikes. 
+  # * iv = [NxM]-matrix of implied volatilities  
+  # * expiries = [1xN]-vector of time to matutities in yeears 
+  # * strkes = [1xM]-vector of strikes 
+  # * spot = underlying spot price
+  # * rates = [1xN]-vector of contnously conpounded risk free rates 
+  # * dividends = [1xN]-vector of contnously conpounded dividend yields 
+  # * t_grid.new = Vector containing the expiries where the new grid will be evaluated, 
+  #                the default is t_grid.new = expiries.  
+  # * k_grid = vector containing the forward-moneyness points where the grid will be 
+  #            evaluated. Default is NULL, which uses a grid with 'n.points' points.  
+  # * forward = [1xN]-vector of forward prices. If NULL it is computed as:  
+  #             spot*exp((rates-dividends)*expiries). 
+  # * add_t = additional time to mturities. 
+  # * alpha = the parameter specifying the centering of the forward-moneyness grid points 
+  #           around the spot, when k_grid is not given by the user. If alpha=NULL, an 
+  #           equally spaced grid is used. 
+  # * n.points = number of points of the output grid. Default is 35. 
   # 
   # VALUE: 
   # * the function returns a list containing the following objects: 
-  #   * smoothPrices
+  #   * p = smoothed prices 
+  #   * iv = smoothed BS implied volatilities  
+  #   * xy = new grid points as xy coordinates 
+  #   * k_grid = moneyness-direction grid points 
+  #   * t_grid = time-direction grid points
+  #   * rates = interest rates 
+  #   * dividends = dividend yields 
+  #   * forward = forward price 
   #
   
   # compute forward prices if missing 
@@ -111,7 +127,6 @@ TPSpreSmoother <- function(iv, expiries, strikes, spot, rates, dividends, t_grid
              forward = forward)
 
   return(out)
-  
 }
 
 
